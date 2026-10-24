@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kalkulačka percent</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: #0d1117;
+      color: #c9d1d9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 24px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    h2 {
+      margin-top: 0;
+      margin-bottom: 20px;
+      font-size: 1.3rem;
+      text-align: center;
+      color: #f0f6fc;
+    }
+
+    .input-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.85rem;
+      color: #8b949e;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      background-color: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      color: #f0f6fc;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus {
+      border-color: #58a6ff;
+    }
+
+    .result-box {
+      margin-top: 24px;
+      background-color: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 14px;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    .result-box:hover {
+      background-color: #30363d;
+      border-color: #58a6ff;
+    }
+
+    .result-label {
+      font-size: 0.75rem;
+      color: #8b949e;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .result-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #3fb950;
+      word-break: break-all;
+    }
+
+    .copy-hint {
+      font-size: 0.75rem;
+      color: #58a6ff;
+      margin-top: 6px;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Percentuálna zľava</h2>
+
+    <div class="input-group">
+      <label for="baseValue">Zadaj číslo (aj desatinné):</label>
+      <input type="number" id="baseValue" step="any" placeholder="napr. 100 alebo 49.99">
+    </div>
+
+    <div class="input-group">
+      <label for="percentage">Koľko % odpočítať:</label>
+      <input type="number" id="percentage" step="any" value="3">
+    </div>
+
+    <div class="result-box" onclick="copyToClipboard()">
+      <div class="result-label">Výsledok po odpočítaní</div>
+      <div class="result-value" id="result">0</div>
+      <span class="copy-hint" id="copyHint">Klikni pre skopírovanie</span>
+    </div>
+  </div>
+
+  <script>
+    const baseInput = document.getElementById('baseValue');
+    const percentInput = document.getElementById('percentage');
+    const resultDisplay = document.getElementById('result');
+    const copyHint = document.getElementById('copyHint');
+
+    function calculate() {
+      const base = parseFloat(baseInput.value);
+      const percent = parseFloat(percentInput.value);
+
+      if (isNaN(base)) {
+        resultDisplay.textContent = '0';
+        return;
+      }
+
+      const p = isNaN(percent) ? 0 : percent;
+      // Výpočet: číslo - (číslo * percento / 100)
+      const calculatedResult = base - (base * (p / 100));
+
+      // Zaokrúhlenie na max 4 desatinné miesta ak sú potrebné
+      const formatted = Math.round(calculatedResult * 10000) / 10000;
+      resultDisplay.textContent = formatted;
+    }
+
+    function copyToClipboard() {
+      const textToCopy = resultDisplay.textContent;
+      if (textToCopy === '0' && baseInput.value === '') return;
+
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        copyHint.textContent = 'Copied!';
+        copyHint.style.color = '#3fb950';
+        
+        setTimeout(() => {
+          copyHint.textContent = 'Klikni pre skopírovanie';
+          copyHint.style.color = '#58a6ff';
+        }, 1500);
+      });
+    }
+
+    baseInput.addEventListener('input', calculate);
+    percentInput.addEventListener('input', calculate);
+  </script>
+
+</body>
+</html>
